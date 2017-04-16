@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 用于生成任意内容 -->
+	<bean id="bookServiceID" class="Demo4Instance.ServiceFactory" factory-method="newInstance"></bean>
+	<!-- factory-method 工厂返回实例化对象的方法名 -->
+	
+</beans>

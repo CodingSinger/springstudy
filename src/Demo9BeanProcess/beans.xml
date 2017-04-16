@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	
+
+	
+	<bean id="Mybeanid" class="Demo9BeanProcess.MyBean" init-method="init" destroy-method="destroy">
+	<property ref="MybeanDaoid" name="myBeanDao"></property>
+	</bean>
+	<bean id="MybeanDaoid" class="Demo9BeanProcess.MyBeanDao">
+	
+	</bean>
+	<bean   class="Demo9BeanProcess.MyBeanPocesser" ></bean>
+	<!-- 配置自己的bean后处理器 -->
+</beans>

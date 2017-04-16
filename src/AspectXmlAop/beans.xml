@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd 
+       					   http://www.springframework.org/schema/context 
+       					   http://www.springframework.org/schema/context/spring-context.xsd 
+       					   http://www.springframework.org/schema/tx 
+   						   http://www.springframework.org/schema/tx/spring-tx.xsd
+       					   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="userDaoId" class="AspectXmlAop.UserDao"/>
+	<bean id="myAspectId" class="AspectXmlAop.MyAspect"/>
+	
+	<aop:config>
+		<aop:aspect ref="myAspectId">
+			<aop:pointcut expression="execution(* AspectXmlAop.UserDao.*(..))" id="pointCut1"/>
+			<!-- expression 切入点表达式 首先声明切入点(哪些方法需要被增强) 这个就是全局切入点 可以被多个aop:befor或者after 引用-->
+			<aop:before method="befor" pointcut-ref="pointCut1"/>
+		</aop:aspect>
+		<!-- aop:aspect这个标签就是aspect编程 用于确定切面类 从而确定通知 
+		其子标签<aop:before method="befor" pointcut-ref="" pointcut="" />
+		aop:before 前置 pointcut-ref 切入点的引用 全局切入点 可以被多个<aop:before>使用 而如果
+		使用pointcut则只能使用一次
+		-->
+	</aop:config>
+</beans>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id = "MyAspectId" class="SpringBeanProxy.MyAspect"></bean>
+	<bean id ="UserDaoid" class="SpringBeanProxy.UserDao"></bean>
+	<!--org.springframework.aop.framework.ProxyFactoryBean生成一个特殊的代理bean  -->
+	<bean id = "ProxyDaoid" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<property name="target" ref="UserDaoid">
+	</property>
+	
+	<!--  <property name="interfaces" value=""></property> 确定接口，如果不写这句话则默认使用cglib代理-->
+	<property name="interceptorNames" value="MyAspectId"></property>
+	<!--
+	<property name="interceptorNames">
+	<array>
+	多个切面类则用array
+	</array>
+	 </property>
+	 -->
+	 <!--  <property name="optimize" value="true"></property>强势使用cglib代理-->
+	</bean>
+</beans>

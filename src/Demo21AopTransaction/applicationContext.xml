@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd 
+       					   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd 
+       					   http://www.springframework.org/schema/context  
+       					   http://www.springframework.org/schema/context/spring-context.xsd 
+       					   http://www.springframework.org/schema/tx 
+       					   http://www.springframework.org/schema/tx/spring-tx.xsd">
+	    <bean id="dataSourceId" class="org.apache.tomcat.jdbc.pool.DataSource">  
+        <property name="poolProperties">  
+            <bean class="org.apache.tomcat.jdbc.pool.PoolProperties">  
+                <property name="url" value="jdbc:mysql://localhost:3306/test"/>  
+                <property name="driverClassName" value="com.mysql.jdbc.Driver"/>  
+                <property name="username" value="root"/>  
+                <property name="password" value="123"/>  
+                <property name="jmxEnabled" value="true"/>  
+                <property name="testWhileIdle" value="false"/>  
+                <property name="testOnBorrow" value="true"/>  
+                <property name="validationInterval" value="30000"/>  
+                <property name="testOnReturn" value="false"/>  
+                <property name="validationQuery" value="select 1"/>  
+                <property name="timeBetweenEvictionRunsMillis" value="30000"/>  
+                <property name="maxActive" value="100"/>  
+                <property name="initialSize" value="10"/>  
+                <property name="maxWait" value="10000"/>  
+                <property name="removeAbandonedTimeout" value="60"/>  
+                <property name="minEvictableIdleTimeMillis" value="30000"/>  
+                <property name="minIdle" value="10"/>  
+                <property name="logAbandoned" value="true"/>  
+                <property name="removeAbandoned" value="true"/>  
+                <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>  
+            </bean>  
+        </property>  
+    </bean>
+ <aop:aspectj-autoproxy expose-proxy="true"/>  
+	<bean id="accountDao" class="Demo21AopTransaction.AccountDao">
+	<!--  <constructor-arg index="0" ref="jdbcTemplateId"></constructor-arg>-->
+		<property name="dataSource" ref="dataSourceId"></property>
+		<!--3  配置dao，需要模板 
+		* 将数据源 datasource注入给dao，继承JdbcDaoSupport 提供setDataSource，且此方法中将自动的创建模板。
+	-->
+	</bean>
+	
+	<bean id="accountServiceImpl" class="Demo21AopTransaction.AccountServiceImpl">
+		<property name="accountDao" ref="accountDao"></property>
+	
+	</bean>
+	<!-- 配置事务详情 
+		id表示事务通知名称
+		transaction-manager配置事务管理器
+		tx:attributes事务属性
+		
+		tx:method事务应用的方法，相当于prop.key
+		no-rollback-for配置遇到就提交的异常
+		rollback-for 配置遇到就混回滚的异常
+		
+	
+	-->
+	
+	<tx:advice  id="TransactionId" transaction-manager="txManager">
+	
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED"  rollback-for="Throwable"/>
+		
+		</tx:attributes>
+	
+	</tx:advice>
+	
+	<aop:config>
+	<!-- 此处如果是*.*那么会对dao层的方法也进行代理，从而无法实例化 ,所以注明只对service类进行切面点，如果该业务层有dao方法要注意排除dao方法-->
+		<aop:advisor advice-ref="TransactionId" pointcut="(execution(* Demo21AopTransaction.AccountServiceImpl.*(..) ))"/>
+		<!-- &amp;&amp;(!execution(* Demo21AopTransaction.AccountServiceImpl.q(..))) -->
+	</aop:config>
+	
+	<!-- 配置事务管理器,食物管理器是从连接池中取得连接的 -->
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceId"></property>
+	
+	</bean>
+	
+</beans>

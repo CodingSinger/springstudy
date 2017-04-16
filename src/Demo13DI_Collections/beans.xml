@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	
+
+	
+
+	<bean id="MyBeanId" class="Demo13DI_Collections.MyBean">
+	<property name="list">
+	<list>
+		<value>aaa</value>
+		<value>bbb</value>
+		<value>ccc</value>
+	</list>
+	</property>
+	<property name="map">
+	<map>
+		<entry key="1" value="key"></entry>
+		<entry key="2" value="asa"></entry>
+		<entry key="3" value="#{MyBeanId.list}"></entry>
+	</map>
+	
+	
+	</property>
+	<property name="set">
+	<set>
+		<value>eee</value>
+		<value>ggg</value>
+		<value>fff</value>	
+	</set>
+	
+	</property>
+	<property name="array">
+	<array>
+	<value>hhh</value>
+	<value>lll</value>
+	<value>kkk</value>
+	</array>
+	</property>
+	<property name="addressProp">
+	<props>
+		 <prop key="one">INDIA</prop>
+     	 <prop key="two">Pakistan</prop>
+      	<prop key="three">USA</prop>
+      	<prop key="four">USA</prop>
+
+	</props>
+	
+	</property>
+	</bean>
+	
+</beans>

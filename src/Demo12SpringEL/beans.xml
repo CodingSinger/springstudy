@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	
+
+	
+	<bean id="MyBeanId" class="Demo12SpringEL.TestBean">
+	<property name="name" value="#{'rose'}"></property>
+	<property name="pi" value="#{T(java.lang.Math).PI}"></property>
+	</bean>
+	<bean id="MyBeanId2" class="Demo12SpringEL.TestBean">
+	<property name="name" value="#{MyBeanId2.name.toUpperCase()}"></property>
+	</bean>
+	
+	<bean id="MyBeanId4" class="Demo12SpringEL.TestBean">
+	<property name="name" value="#{MyBeanId2.tName?.toUpperCase()}"></property>
+	</bean>
+	<bean id="MyBeanId3" class="Demo12SpringEL.TestBean2">
+	<property name="testBean" value="#{MyBeanId2}"></property>
+	<property name="bName" value="#{MyBeanId2.to()}"></property>
+	</bean>
+</beans>

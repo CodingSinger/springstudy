@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	    <bean id="dataSourceId" class="org.apache.tomcat.jdbc.pool.DataSource">  
+        <property name="poolProperties">  
+            <bean class="org.apache.tomcat.jdbc.pool.PoolProperties">  
+                <property name="url" value="jdbc:mysql://localhost:3306/test"/>  
+                <property name="driverClassName" value="com.mysql.jdbc.Driver"/>  
+                <property name="username" value="root"/>  
+                <property name="password" value="123"/>  
+                <property name="jmxEnabled" value="true"/>  
+                <property name="testWhileIdle" value="false"/>  
+                <property name="testOnBorrow" value="true"/>  
+                <property name="validationInterval" value="30000"/>  
+                <property name="testOnReturn" value="false"/>  
+                <property name="validationQuery" value="select 1"/>  
+                <property name="timeBetweenEvictionRunsMillis" value="30000"/>  
+                <property name="maxActive" value="100"/>  
+                <property name="initialSize" value="10"/>  
+                <property name="maxWait" value="10000"/>  
+                <property name="removeAbandonedTimeout" value="60"/>  
+                <property name="minEvictableIdleTimeMillis" value="30000"/>  
+                <property name="minIdle" value="10"/>  
+                <property name="logAbandoned" value="true"/>  
+                <property name="removeAbandoned" value="true"/>  
+                <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"/>  
+            </bean>  
+        </property>  
+    </bean>
+
+	<bean id="accountDao" class="Demo20TransactionPorxy.AccountDao">
+	<!--  <constructor-arg index="0" ref="jdbcTemplateId"></constructor-arg>-->
+		<property name="dataSource" ref="dataSourceId"></property>
+		<!--3  配置dao，需要模板 
+		* 将数据源 datasource注入给dao，继承JdbcDaoSupport 提供setDataSource，且此方法中将自动的创建模板。
+	-->
+	</bean>
+	
+	<bean id="accountServiceImpl" class="Demo20TransactionPorxy.AccountServiceImpl">
+		<property name="accountDao" ref="accountDao"></property>
+	
+	</bean>
+	<bean id="ProxyService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<!-- 配置事务管理器 -->
+		<property name="transactionManager" ref="txManager"></property>
+		<property name="proxyInterfaces" value="Demo20TransactionPorxy.AccountService"></property>
+		<!-- 配置目标类 -->
+		<property name="target" ref="accountServiceImpl"></property>
+		<!-- 配置事务管理器属性 -->
+		<property name="transactionAttributes">
+			<props>
+			<!-- prop.key表示哪些方法使用该设置
+			add*表示以add开头的方法
+			*表示任意方
+			
+			prop.text表示事务设置
+			格式:
+				PROPAGETION,ISOLATION,readOnly,-Exception,+Exception
+				传播行为     隔离级别     是否只读，    异常回滚   异常提交
+			-->
+			<prop key="*">PROPAGATION_REQUIRED,ISOLATION_SERIALIZABLE</prop>
+			
+			</props>
+		
+		</property>
+	</bean>
+	
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceId"></property>
+	
+	</bean>
+	
+</beans>
