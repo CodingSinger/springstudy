@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd 
+       					   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+<aop:aspectj-autoproxy expose-proxy="true"/>  
+	<!-- 1 创建目标类 -->
+	<bean id="userServiceId" class="AspectJAop.MyTestImpl"></bean>
+	<!-- 2创建切面类（通知） -->
+	<bean id="myAspectId" class="AspectJAop.MyAspect"></bean>
+	<!-- 3 aspect 编程 
+		<aop:config> aop 编程
+			proxy-target-class 如果设置true表示强转使用cglib代理
+		<aop:aspect> aspect编程
+			ref 用于确定切面类，从而确定通知
+		
+	-->
+	<aop:config proxy-target-class="true"><!-- 默认为false,如果有接口，添加这个属性则用jdk动态代理，如果没接口，则为cglib代理，如果有接口，但设置该属性为false，则强制用cglib-->
+		<aop:aspect ref="myAspectId">
+			<!-- 声明切入点，确定目标类上哪些方法将成为切入点，需要被增强 -->
+			<aop:pointcut expression="execution(* AspectJAop.*.*(..))" id="myPointcut"/>
+			<!-- 声明通知方式 
+				1.前置通知
+					<aop:before method=""/>
+						method 切面类中具体的方法名称
+							方法可以有一个参数，类型： org.aspectj.lang.JoinPoint
+							用于获得当前执行方法的具体详情
+						pointcut-ref 切入点的引用（大家共享）
+						pointcut 给当前前置通知编写切入点表达式（自己使用）
+					<aop:before method="myBefore" pointcut-ref="myPointcut"/>
+				2.后置通知
+					目标方法执行之后才执行，可以获得返回值。
+					returning 用于设置通知第二个参数的名称，类型：Object
+						public void myAfterReturning(JoinPoint joinPoint,Object ret){
+						<aop:after-returning returning="ret"/>
+					<aop:after-returning method="myAfterReturning" pointcut-ref="myPointcut" returning="ret"/>
+				3.环绕通知
+					环绕通知方法要求
+						1.返回类型Object
+						2.必须抛出异常 throws Throwable
+						3.必须接受一个参数，类型 ProceedingJoinPoint
+						4.方法体中手动执行目标方法，Object obj = joinPoint.proceed();
+					<aop:around method="myAround" pointcut-ref="myPointcut"/>
+				4.抛出异常
+					目标方法出现异常时执行，如果没有异常忽略。
+					throwing 设置第二个参数名称，获得具体的异常信息的。类型：Throwable
+						public void myAfterThrowing(JoinPoint joinPoint,Throwable e){
+					<aop:after-throwing method="myAfterThrowing" pointcut-ref="myPointcut" throwing="e"/>
+				5.最终after
+					无论是否有异常，都将执行
+			-->
+			<aop:after method="Myafter" pointcut-ref="myPointcut" />
+			<aop:before method="Mybefore" pointcut-ref="myPointcut" />
+			<aop:around method="MyAround" pointcut-ref="myPointcut" />
+			<aop:after-returning method="MyafterReturning" returning="obj" pointcut-ref="myPointcut" />
+			<!-- 执行完after再执行after-returning -->
+			<aop:after-throwing method="MyAtferThrowing"  pointcut-ref="myPointcut" throwing="e"/>
+		</aop:aspect>
+	</aop:config>
+	
+</beans>
